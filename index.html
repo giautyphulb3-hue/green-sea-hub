@@ -173,7 +173,7 @@ body{background:var(--bg) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.or
 .btn:not(.solid):hover:not(:disabled),.chip:not([aria-pressed="true"]):hover{background-color:rgba(31,116,168,.08)}
 .btn.solid:hover:not(:disabled){filter:brightness(1.12)}
 @keyframes gsSpin{to{transform:rotate(360deg)}}
-.ripple{position:absolute;border-radius:50%;pointer-events:none;background:radial-gradient(circle,rgba(255,255,255,.65) 0,rgba(159,211,240,.45) 40%,rgba(159,211,240,0) 70%);transform:scale(0);animation:gsRipple .7s ease-out forwards;z-index:0}
+#login[hidden]{display:none!important}.ripple{position:absolute;border-radius:50%;pointer-events:none;background:radial-gradient(circle,rgba(255,255,255,.65) 0,rgba(159,211,240,.45) 40%,rgba(159,211,240,0) 70%);transform:scale(0);animation:gsRipple .7s ease-out forwards;z-index:0}
 @keyframes gsRipple{to{transform:scale(2.6);opacity:0}}
 .mtop{background:linear-gradient(180deg,#0B3358,#0A2A48)}
 .mtop .mb{display:flex;align-items:center;gap:10px}
