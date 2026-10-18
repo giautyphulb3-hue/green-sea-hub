@@ -188,7 +188,7 @@ body{background:var(--bg) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.or
     <div class="brand"><img class="lgx" src="logo.png" alt="Logo Green Sea"><em>Tinh hoa biển, vị thượng hạng</em><span>Bảng điều hành marketing</span></div>
     <span class="bub" style="left:18%;animation-delay:0s"></span><span class="bub" style="left:52%;width:7px;height:7px;animation-delay:3s"></span><span class="bub" style="left:78%;width:12px;height:12px;animation-delay:6s"></span>
     <nav class="nav" id="nav"></nav>
-    <div class="foot"><button class="btn" id="logoutBtn" type="button" style="color:#DCE3E8;border-color:rgba(220,227,232,.4);width:100%">Đăng xuất</button></div>
+    <div class="foot"><button class="btn" id="pwBtn" type="button" style="color:#DCE3E8;border-color:rgba(220,227,232,.4);width:100%;margin-bottom:8px">Đổi mật khẩu</button><button class="btn" id="logoutBtn" type="button" style="color:#DCE3E8;border-color:rgba(220,227,232,.4);width:100%">Đăng xuất</button></div>
     
   </aside>
   <header class="mtop"><div class="mb"><img src="logo.png" alt="Logo Green Sea"></div><nav class="mtabs" id="mnav" aria-label="Điều hướng"></nav></header>
@@ -199,8 +199,8 @@ body{background:var(--bg) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.or
     <img src="logo.png" alt="Logo Green Sea" style="width:180px;align-self:center">
     <p style="margin:0;text-align:center;font-family:'EB Garamond',Georgia,serif;font-style:italic;color:#E2C27A">Tinh hoa biển, vị thượng hạng</p>
     <label style="display:flex;flex-direction:column;gap:6px;font-size:14px;font-weight:600">Email công ty<input id="loginEmail" type="email" required autocomplete="email" style="border:1px solid #22415F;border-radius:10px;padding:10px 12px;background:#071A2E;color:#E8ECEF;font-size:16px"></label>
-    <button class="btn solid" type="submit" style="background:#E2C27A;color:#071A2E;border-color:#E2C27A">Gửi link đăng nhập</button>
-    <p id="loginMsg" style="margin:0;font-size:14px;color:#9FB0BA">Chỉ email đã được mời mới đăng nhập được. Link đăng nhập sẽ gửi vào hộp thư.</p>
+    <button class="btn solid" type="submit" style="background:#E2C27A;color:#071A2E;border-color:#E2C27A">Đăng nhập</button><button type="button" id="magicBtn" style="background:none;border:0;color:#9FB0BA;text-decoration:underline;cursor:pointer;font:inherit">Quên mật khẩu? Gửi link đăng nhập vào email</button>
+    <p id="loginMsg" style="margin:0;font-size:14px;color:#9FB0BA">Đăng nhập bằng email và mật khẩu đã được cấp.</p>
   </form>
 </div>
 <dialog id="dlg"><form class="dlg" id="dlgForm" method="dialog"></form></dialog>
@@ -598,8 +598,8 @@ body{background:var(--bg) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.or
     sb.auth.getSession().then(function(r){onSession(r.data.session);});
     sb.auth.onAuthStateChange(function(_e,sess){onSession(sess);});
     document.getElementById("loginForm").addEventListener("submit",function(e){e.preventDefault();var em=document.getElementById("loginEmail").value.trim();var msg=document.getElementById("loginMsg");msg.textContent="Đang gửi…";
-      sb.auth.signInWithOtp({email:em,options:{shouldCreateUser:false,emailRedirectTo:location.origin+location.pathname}}).then(function(r){msg.textContent=r.error?"Email này chưa được mời hoặc gửi lỗi: "+r.error.message:"Đã gửi link đăng nhập tới "+em+". Mở email và bấm vào link.";});});
-    document.getElementById("logoutBtn").addEventListener("click",function(){sb.auth.signOut().then(function(){location.reload();});});
+      var pw=document.getElementById("loginPw").value;sb.auth.signInWithPassword({email:em,password:pw}).then(function(r){msg.textContent=r.error?"Sai email hoặc mật khẩu.":"Đăng nhập thành công.";});});document.getElementById("magicBtn").addEventListener("click",function(){var em=document.getElementById("loginEmail").value.trim();var msg=document.getElementById("loginMsg");if(!em){msg.textContent="Nhập email trước.";return;}sb.auth.signInWithOtp({email:em,options:{shouldCreateUser:false,emailRedirectTo:location.origin+location.pathname}}).then(function(r){msg.textContent=r.error?"Gửi lỗi: "+r.error.message:"Đã gửi link đăng nhập tới "+em+".";});});
+    document.getElementById("pwBtn").addEventListener("click",function(){var p=prompt("Mật khẩu mới (ít nhất 8 ký tự):");if(!p)return;if(p.length<8){alert("Mật khẩu cần ít nhất 8 ký tự.");return;}sb.auth.updateUser({password:p}).then(function(r){alert(r.error?"Chưa đổi được: "+r.error.message:"Đã đổi mật khẩu.");});});document.getElementById("logoutBtn").addEventListener("click",function(){sb.auth.signOut().then(function(){location.reload();});});
   }
 })();
 </script>
