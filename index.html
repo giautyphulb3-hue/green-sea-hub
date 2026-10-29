@@ -81,7 +81,7 @@ table{border-collapse:collapse;width:100%;min-width:560px}
 th,td{text-align:left;padding:10px;border-bottom:1px solid var(--line);vertical-align:top}
 th{font-size:13px;color:var(--muted);font-weight:600}
 td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
-.vgrid{display:grid;grid-template-columns:110px repeat(2,minmax(200px,1fr));gap:8px;min-width:520px}
+.vgrid{display:grid;grid-template-columns:110px repeat(3,minmax(190px,1fr));gap:8px;min-width:700px}
 .vcell{border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:10px;min-height:86px;cursor:pointer;text-align:left}
 .vcell:hover{border-color:var(--wave)}
 .vcell.empty{background:transparent;border-style:dashed;color:var(--muted)}
@@ -214,6 +214,7 @@ body{background:var(--bg) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.or
   "use strict";
   var VIEWS=[["overview","Tổng quan"],["today","Hôm nay"],["reports","Báo cáo ngày"],["tasks","Việc từng ngày"],["videos","Lịch video"],["review","Đánh giá báo cáo"],["budget","Ngân sách"],["metrics","Số liệu tuần"],["links","Tài liệu"]];
   var CH=[["gs","Green Sea"],["kien","Kiên Green Sea"]];
+  var VS=[["gs","Green Sea · video 1"],["gs2","Green Sea · video 2"],["kien","Kiên Green Sea"]];
   var TSTAT={todo:"Chưa làm",doing:"Đang làm",done:"Xong"};
   var VSTAT={kichban:"Kịch bản",daquay:"Đã quay",dadung:"Đã dựng",dadang:"Đã đăng"};
   var PRODUCTS=["Bào ngư","Ốc bulot","Bò ba chỉ Canada","Công ty"];
@@ -257,8 +258,8 @@ body{background:var(--bg) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.or
     var tasks=S.tasks.filter(function(x){return x.date===t;});
     var late=S.tasks.filter(function(x){return taskState(x)==="late";});
     var pend=S.approvals.filter(function(a){return (a.status||"cho")==="cho";});
-    var vids=CH.map(function(c){var v=S.videos[t+"_"+c[0]];return '<div class="row"><div class="t"><b>'+c[1]+"</b><small>"+(v?esc(v.topic||"Chưa có chủ đề"):"Chưa lên lịch")+"</small></div>"+(v?'<span class="stage k-'+esc(v.status||"kichban")+'">'+VSTAT[v.status||"kichban"]+"</span>":'<button class="btn" data-vedit="'+t+"|"+c[0]+'"'+(ro()?" disabled":"")+">Lên lịch</button>")+"</div>";}).join("");
-    return head("Hôm nay",label(t)+" · từ 26/10: làm video và đo lường · quay 3 buổi sáng thứ 2, 4, 6, còn lại dựng và edit · mỗi ngày đủ 2 video (Green Sea, Kiên Green Sea) · đăng cả Facebook và TikTok · thứ 7 đo lường tuần")+
+    var vids=VS.map(function(c){var v=S.videos[t+"_"+c[0]];return '<div class="row"><div class="t"><b>'+c[1]+"</b><small>"+(v?esc(v.topic||"Chưa có chủ đề"):"Chưa lên lịch")+"</small></div>"+(v?'<span class="stage k-'+esc(v.status||"kichban")+'">'+VSTAT[v.status||"kichban"]+"</span>":'<button class="btn" data-vedit="'+t+"|"+c[0]+'"'+(ro()?" disabled":"")+">Lên lịch</button>")+"</div>";}).join("");
+    return head("Hôm nay",label(t)+" · từ 26/10: làm video và đo lường · quay 3 buổi sáng thứ 2, 4, 6, còn lại dựng và edit · mỗi ngày đủ 3 video (2 Green Sea, 1 Kiên Green Sea) · đăng cả Facebook và TikTok · thứ 7 đo lường tuần")+
     '<div class="grid">'+
     (function(){var r=S.reports[t];return '<section class="panel"><h2>Báo cáo hôm nay</h2>'+(r?'<p>'+rPill(r)+' · nộp lúc '+esc(timeOf(r.submittedAt))+'</p><p><button class="btn" data-go="reports">Xem báo cáo</button></p>':'<p class="empty-state">Chưa nộp báo cáo hôm nay.</p><p><button class="btn solid" data-rsubmit="'+t+'"'+(ro()?" disabled":"")+'>Nộp báo cáo hôm nay</button></p>')+'</section>';})()+
     '<section class="panel"><h2>Việc hôm nay</h2>'+(tasks.length?tasks.map(taskRow).join(""):'<p class="empty-state">Hôm nay không có việc riêng ngoài nhịp cố định.</p>')+"</section>"+
@@ -297,7 +298,7 @@ body{background:var(--bg) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.or
       var a=ph.start,b=ph.end,now=inRange(t,a,b);
       var tk=S.tasks.filter(function(x){return inRange(x.date,a,b)&&(x.hours||0)>0;});
       var tkd=tk.filter(function(x){return x.status==="done";}).length;
-      var vstart=a<"2026-10-23"?"2026-10-23":a,vTarget=0,d=vstart;while(d<=b){vTarget+=CH.length;d=addDays(d,1);}
+      var vstart=a<"2026-10-23"?"2026-10-23":a,vTarget=0,d=vstart;while(d<=b){vTarget+=VS.length;d=addDays(d,1);}
       var vp=Object.keys(S.videos).filter(function(k){var v=S.videos[k];return v.status==="dadang"&&inRange(v.date||k.slice(0,10),a,b);}).length;
       var wd=0,rp=0;d=a;while(d<=b&&d<=t){if(parse(d).getDay()!==0){wd++;if(S.reports[d])rp++;}d=addDays(d,1);}
       var auto=tk.length?meter("Việc đã xong",tkd,tk.length)+meter("Video đã đăng",vp,vTarget)+meter("Báo cáo ngày đã nộp",rp,wd):'<p class="empty-state">Việc từng ngày sẽ được xếp sau buổi tổng kết 30/11.</p>';
@@ -366,16 +367,16 @@ body{background:var(--bg) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.or
   V.videos=function(){
     var w=S.vweek,idx=WEEKS.indexOf(w),t=todayIso();
     var nav='<div class="toolbar"><button class="btn" data-vw="-1"'+(idx<=0?" disabled":"")+'>Tuần trước</button><b style="padding:0 8px">'+label(w)+" – "+label(addDays(w,6))+'</b><button class="btn" data-vw="1"'+(idx>=WEEKS.length-1?" disabled":"")+">Tuần sau</button></div>";
-    var cells='<div class="vhead">Ngày</div>'+CH.map(function(c){return '<div class="vhead">'+c[1]+"</div>";}).join("");
+    var cells='<div class="vhead">Ngày</div>'+VS.map(function(c){return '<div class="vhead">'+c[1]+"</div>";}).join("");
     for(var i=0;i<7;i++){var d=addDays(w,i);cells+='<div class="vday'+(d===t?" today":"")+'">'+label(d)+"</div>";
-      CH.forEach(function(c){var v=S.videos[d+"_"+c[0]];
+      VS.forEach(function(c){var v=S.videos[d+"_"+c[0]];
         if(v){var vf=v.viewsFb!=null&&v.viewsFb!==""?" · FB "+nfmt(v.viewsFb):"",vt=v.viewsTt!=null&&v.viewsTt!==""?" · TikTok "+nfmt(v.viewsTt):"";cells+='<button class="vcell" data-vedit="'+d+"|"+c[0]+'"'+(ro()?" disabled":"")+'><b>'+esc(v.topic||"Chưa có chủ đề")+"</b><br><small>"+esc(v.product||"")+vf+vt+'</small><br><span class="stage k-'+esc(v.status||"kichban")+'">'+VSTAT[v.status||"kichban"]+'</span><br><span class="plat '+(vFb(v)?"on":"off")+'">Facebook '+(vFb(v)?"có link":"chưa link")+'</span><span class="plat '+(vTt(v)?"on":"off")+'">TikTok '+(vTt(v)?"có link":"chưa link")+"</span></button>";}
         else cells+='<button class="vcell empty" data-vedit="'+d+"|"+c[0]+'"'+(ro()?" disabled":"")+">Thêm video</button>";});}
-    var cnt=0,posted=0;for(var j=0;j<7;j++){CH.forEach(function(c){var v=S.videos[addDays(w,j)+"_"+c[0]];if(v){cnt++;if(v.status==="dadang")posted++;}});}
-    var lrows="",tf=0,tt=0;for(var k=0;k<7;k++){var dd=addDays(w,k);CH.forEach(function(c){var v=S.videos[dd+"_"+c[0]];if(!v||!(vFb(v)||vTt(v)||v.viewsFb||v.viewsTt))return;tf+=Number(v.viewsFb)||0;tt+=Number(v.viewsTt)||0;var f=safeUrl(vFb(v)),g=safeUrl(vTt(v));
+    var cnt=0,posted=0;for(var j=0;j<7;j++){VS.forEach(function(c){var v=S.videos[addDays(w,j)+"_"+c[0]];if(v){cnt++;if(v.status==="dadang")posted++;}});}
+    var lrows="",tf=0,tt=0;for(var k=0;k<7;k++){var dd=addDays(w,k);VS.forEach(function(c){var v=S.videos[dd+"_"+c[0]];if(!v||!(vFb(v)||vTt(v)||v.viewsFb||v.viewsTt))return;tf+=Number(v.viewsFb)||0;tt+=Number(v.viewsTt)||0;var f=safeUrl(vFb(v)),g=safeUrl(vTt(v));
       lrows+="<tr><td>"+label(dd)+"</td><td>"+c[1]+"</td><td>"+esc(v.topic||"")+"</td><td>"+(f?'<a href="'+esc(f)+'" target="_blank" rel="noopener">Mở</a>':"–")+'</td><td class="num">'+nfmt(v.viewsFb)+"</td><td>"+(g?'<a href="'+esc(g)+'" target="_blank" rel="noopener">Mở</a>':"–")+'</td><td class="num">'+nfmt(v.viewsTt)+"</td></tr>";});}
     var ltable='<section class="panel" style="margin-top:18px"><h2>Đo lường video tuần này</h2><div class="sum" style="margin:0 0 8px"><div><b>'+nfmt(tf)+'</b><span>Lượt xem Facebook</span></div><div><b>'+nfmt(tt)+'</b><span>Lượt xem TikTok</span></div><div><b>'+nfmt(tf+tt)+'</b><span>Tổng lượt xem</span></div></div><div class="tbl-wrap"><table><thead><tr><th>Ngày</th><th>Kênh</th><th>Chủ đề</th><th>Facebook</th><th class="num">Lượt xem</th><th>TikTok</th><th class="num">Lượt xem</th></tr></thead><tbody>'+(lrows||'<tr><td colspan="7" class="empty-state">Chưa có video nào có link. Bấm vào ô video để dán link Facebook và TikTok.</td></tr>')+"</tbody></table></div></section>";
-    return head("Lịch video",posted+"/"+(7*CH.length)+" video đã đăng tuần này · "+cnt+" đã lên lịch")+nav+'<div class="tbl-wrap"><div class="vgrid">'+cells+"</div></div>"+ltable;
+    return head("Lịch video",posted+"/"+(7*VS.length)+" video đã đăng tuần này · "+cnt+" đã lên lịch")+nav+'<div class="tbl-wrap"><div class="vgrid">'+cells+"</div></div>"+ltable;
   };
   V.approvals=function(){
     var order={cho:0,chua:1,duyet:2};
@@ -443,7 +444,7 @@ body{background:var(--bg) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.or
   function writeErr(err){var c=err&&err.code;if(c==="invalid_argument"){S.canWrite=false;render();return "Bạn chưa có quyền sửa. Nhờ Kiên chia sẻ với quyền “Có thể tương tác”.";}if(c==="quota_exceeded")return "Bộ nhớ dữ liệu đã đầy, hãy xoá bớt mục cũ.";return "Chưa lưu được, thử lại sau ít phút.";}
   function opt(list,val){return list.map(function(o){var v=Array.isArray(o)?o[0]:o,t=Array.isArray(o)?o[1]:o;return '<option value="'+esc(v)+'"'+(String(val)===String(v)?" selected":"")+">"+esc(t)+"</option>";}).join("");}
 
-  function autoLinks(d){var out=[];CH.forEach(function(c){var v=S.videos[d+"_"+c[0]];if(!v)return;if(vFb(v))out.push(c[1]+" · Facebook: "+vFb(v));if(vTt(v))out.push(c[1]+" · TikTok: "+vTt(v));});return out.join("\n");}
+  function autoLinks(d){var out=[];VS.forEach(function(c){var v=S.videos[d+"_"+c[0]];if(!v)return;if(vFb(v))out.push(c[1]+" · Facebook: "+vFb(v));if(vTt(v))out.push(c[1]+" · TikTok: "+vTt(v));});return out.join("\n");}
   function submitReport(d){
     var r=S.reports[d]||{};if(r.sample)r={};var prev={};(r.items||[]).forEach(function(it){prev[it.id]=it;});
     var tasks=S.tasks.filter(function(x){return x.date===d;}).sort(function(a,b){return (a.order||99)-(b.order||99);});
@@ -489,7 +490,7 @@ body{background:var(--bg) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.or
   }
   function editVideo(key){
     var p=key.split("|"),d=p[0],c=p[1],v=S.videos[d+"_"+c]||{status:"kichban",product:"Bào ngư"};
-    var cn=CH.filter(function(x){return x[0]===c;})[0][1];
+    var cn=VS.filter(function(x){return x[0]===c;})[0][1];
     openDlg("Video "+cn+" · "+label(d),
       '<label>Chủ đề<input name="topic" maxlength="200" value="'+esc(v.topic||"")+'" placeholder="Ví dụ: cân NET túi bào ngư size 12"></label><label>Sản phẩm<select name="product">'+opt(PRODUCTS,v.product||"Bào ngư")+'</select></label><label>Trạng thái<select name="status">'+opt(Object.keys(VSTAT).map(function(k){return [k,VSTAT[k]];}),v.status||"kichban")+'</select></label><label>Link Facebook<input name="linkFb" type="url" maxlength="500" value="'+esc(vFb(v))+'" placeholder="https://www.facebook.com/..."></label><label>Lượt xem Facebook<input name="viewsFb" type="number" min="0" value="'+esc(v.viewsFb!=null?v.viewsFb:"")+'"></label><label>Link TikTok<input name="linkTt" type="url" maxlength="500" value="'+esc(vTt(v))+'" placeholder="https://www.tiktok.com/..."></label><label>Lượt xem TikTok<input name="viewsTt" type="number" min="0" value="'+esc(v.viewsTt!=null?v.viewsTt:"")+'"></label>',
       function(fd){var lf=fd.linkFb.trim(),lt=fd.linkTt.trim();var st=fd.status;if((lf||lt)&&st!=="dadang")st="dadang";return S.db.collection("videos").doc(d+"_"+c).set({date:d,channel:c,topic:fd.topic.trim(),product:fd.product,status:st,linkFb:lf,linkTt:lt,viewsFb:fd.viewsFb===""?null:Number(fd.viewsFb),viewsTt:fd.viewsTt===""?null:Number(fd.viewsTt)});});
